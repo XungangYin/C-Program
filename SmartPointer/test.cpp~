@@ -1,0 +1,44 @@
+#include <iostream>
+#include <memory>
+using namespace std;
+class A{
+public:
+  A(int a):value(a){
+    cout<<value<<" 调用构造函数"<<endl;
+  }
+
+  ~A(){
+    cout<<value<<"调用析构函数"<<endl;
+  }
+  
+  int value;
+};
+
+
+int main(int argc,char **argv)
+{
+  shared_ptr<A> a;  //只是创建了一个空指针
+  a = make_shared<A>(0); //真正分配一块内存
+  cout<<"..."<<endl;
+
+  shared_ptr<A> b(new A(1));
+  cout<<"..."<<endl;
+
+  auto c = std::make_shared<A>(2);
+  cout<<"..."<<endl;
+  if(!a)
+    {
+      cout<<"2134123"<<endl;
+      a = b;
+      a.reset();
+    }
+ 
+    A *_a = new A(10);
+    A _b(11);
+    cout<<"asdfasf"<<endl;
+    delete _a;  //如果注释掉，则_a不析构，造成内存泄露.因为A不是智能指针
+    _a = nullptr;//防止成为野指针
+
+
+  return 0;
+}

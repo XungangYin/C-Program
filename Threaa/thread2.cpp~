@@ -1,0 +1,46 @@
+/*
+   演示如何向线程传递参数,pthread_create创建线程成功时，返回0
+ */
+
+#include <iostream>
+#include <pthread.h>
+#include <cstdlib>
+
+using namespace std;
+#define NUM 5
+
+struct thread_data{
+  int thread_id;
+  char *message;
+};
+
+void *PrintHello(void *threadarg){
+  struct thread_data *my_data;
+  my_data = (struct thread_data *)threadarg;
+  cout<<"thread id:"<<my_data->thread_id;
+  cout<<" Mesaage :"<<my_data->message<<endl;
+  
+  pthread_exit(NULL);
+}
+
+int main(){
+  pthread_t threads[NUM];
+  struct thread_data td[NUM];
+  int rc;
+  int i;
+
+  for(i = 0;i<NUM;i++){
+    cout<<"main():creating thread,"<<i<<endl;
+    td[i].thread_id = i;
+    td[i].message = (char *)("This is message ");
+    rc = pthread_create(&threads[i],NULL,PrintHello,(void *)&td[i]);
+    if(rc){
+      cout<<"Error:unable to creat thread "<<rc<<endl;
+      exit(-1);
+    }
+  }
+
+  cout<<"adsfasf"<<endl;
+  pthread_exit(NULL); //退出主线程
+
+}

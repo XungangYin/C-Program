@@ -1,0 +1,12 @@
+#include <iostream>
+#include <string.h>
+
+using namespace std;
+int main(int argc,char **argv){
+
+  char a[]="12345";
+
+  cout<<strlen(a)<<endl; //结果为5
+  cout<<sizeof(a)<<endl; //结果为6
+
+}

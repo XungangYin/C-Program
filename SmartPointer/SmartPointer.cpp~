@@ -1,0 +1,18 @@
+#include <iostream>
+#include <memory>
+
+template <typename T>
+class SmartPointer{
+  private:
+  
+  
+  
+}
+
+
+
+int main(int argc,char **argv){
+
+
+  return 0;
+}
