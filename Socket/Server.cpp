@@ -38,7 +38,7 @@ void Server::Init()
     exit(-1);
   }
   
-  //监听。
+  //监听服务器。
   /*listen()函数：使主动链接套接口变为被动连接套接口，从而使得一个进程可以接受其他进程的请求，进而成为一个服务器进程
    * 在TCP服务器编程中，该函数把进程变为一个服务器，并指定相应的套接字变为被动连接。
    * 该函数的调用一般在bind（）之后和accept（）之前
@@ -60,7 +60,7 @@ void Server::Init()
     exit(-1);
   }
   
-  //向事件表里添加监听事件。将socket fd注册到epoll fd中，并将出发方式设置为ET提高效率
+  //向事件表里添加监听事件。将socket fd注册到epoll fd中，并将触发方式设置为ET提高效率
   addfd(epfd,listener,true);
   
 }
@@ -84,21 +84,29 @@ int Server::SendBroadcastMessage(int clientfd)
   char send_buf[BUF_SIZE];
   
   Msg msg;
-  //置字符串前size个字节为0
+  //置字符串前BUF_SIZE个字节为0
   bzero(recv_buf,BUF_SIZE);
   //接受消息
   cout<<"read from client (cliendID =  "<<clientfd<<")"<<endl;
+  
+  /*无论是服务器还是客户端都用recv函数从对方接受数据.
+   * 参数1：指定接受端套接字描述符;参数2：指明缓冲区；参数3：缓冲区的大小；参数4：一般为 0；
+   */
   int len = recv(clientfd,recv_buf,BUF_SIZE,0);
   //清空结构体，把接收到的字符串转换为结构体
   memset(&msg,0,sizeof(msg));
+//  cout<<"msg is:"<<msg.content[0]<<endl;
   memcpy(&msg,recv_buf,sizeof(msg));
+ // cout<<"msg1 is:"<<msg.content[0]<<endl;
   
   //判断收到的消息是私聊还是群聊
   msg.fromID = clientfd;
-  if(msg.content[0] == '\\' && isdigit(msg.content[1])){
+  if(msg.content[0] == '\\' && isdigit(msg.content[1])){  //isdigit函数用于检查参数是否是十进制数字字符
     msg.type = 1;
+    //将对应的字符数字转化为数字。例如：‘6’-‘0’ = 6；
     msg.toID = msg.content[1]-'0';
-    memcpy(msg.content,msg.content+2,sizeof(msg.content));//从结尾后两个开始复制
+    //从结尾后两个开始复制. 为啥这么做？？
+    memcpy(msg.content,msg.content+2,sizeof(msg.content));
   } 
   else
     msg.type = 0;
@@ -109,7 +117,7 @@ int Server::SendBroadcastMessage(int clientfd)
     //在客户端列表中删除该客户端
     clients_list.remove(clientfd);
     cout<<"ClientID ="<<clientfd
-      <<"closed .\n now there are "<<clients_list.size()<<"client in the char room"<<endl;
+      <<" closed .\nnow there are "<<clients_list.size()<<" client in the char room"<<endl;
   }
   //发送广播消息给所有客户端
   else { 
@@ -119,6 +127,10 @@ int Server::SendBroadcastMessage(int clientfd)
       memcpy(&msg.content,CAUTION,sizeof(msg.content));
       bzero(send_buf,BUF_SIZE);
       memcpy(send_buf,&msg,sizeof(msg));
+      
+      /*无论是客户端还是服务器程序都用send函数发送数据，客户端用它发送请求，服务器用它发送应答
+       * 参数1：指定发送端套接字fd；参数2：存放数据的缓冲区；参数3：发送数据的字节大小；参数4：一般为0
+       */
       send(clientfd,send_buf,sizeof(send_buf),0);
       return len;
     }
@@ -188,24 +200,34 @@ void Server::Start()
   //epoll事件队列
   static struct epoll_event events[EPOLL_SIZE];
   
-  //初始化服务端
+  //初始化服务端。
   Init();
   
   while(1){
     //epoll_events_count表示就绪事件的数目
+    /*epoll_wait():wait  for  an  I/O  event on an epoll file descriptor
+     * 参数1：epfd句柄；参数2：事件的集合；参数3：事件集合的大小；参数4：0 表示立即返回，不阻塞，-1 表示阻塞等到相应事件发生时返回。
+     * 函数成功返回准备就绪的文件个数，失败返回-1。
+     */
     int epoll_events_count = epoll_wait(epfd,events,EPOLL_SIZE,-1);
+    
     if(epoll_events_count < 0){
       perror("epoll failuer!");
       break;
     }
-    cout<<"epoll_events_count = \n"<<epoll_events_count<<endl;
+    cout<<"epoll_events_count = "<<epoll_events_count<<endl;
     //处理就绪事件
     for(int i = 0; i < epoll_events_count;++i){
       int sockfd = events[i].data.fd;
-      //新用户链接
+      //新用户链接. 为什么他俩相等就是新用户的连接？
       if(sockfd == listener){
 	struct sockaddr_in client_address;
 	socklen_t client_addrLength = sizeof(struct sockaddr_in);
+	/*accept():接受客户端的连接请求，成功返回与参数1同类型的套接字fd；
+	 * 参数1：套接字fd，该函数从参数1的等待连接队列中抽取第一个连接，如果队列中无等待连接，且套接口为阻塞方式，则函数阻塞调用进程直至新的连接出现；
+	 * 参数2：结构体指针，存放客户端的地址信息；参数3：为参数2指向区域的长度，在函数调用后被设置为实际地址信息长度
+	 * 返回值：新的套接字fd，代表的是和客户端的新的连接
+	 */
 	int clientfd = accept(listener,(struct sockaddr *)&client_address,&client_addrLength);
 	cout << "client connection from: "
                      << inet_ntoa(client_address.sin_addr) << ":"
@@ -216,13 +238,15 @@ void Server::Start()
 	//服务器端用list保存用户链接
 	clients_list.push_back(clientfd);
 	cout << "Add new clientfd = " << clientfd << " to epoll" << endl;
-        cout << "Now there are " << clients_list.size() << " clients int the chat room" << endl;
+        cout << "Now there are " << clients_list.size() << " clients in the chat room" << endl;
 	
 	//服务器端发送欢迎消息
-	cout<<"welcome message"<<endl;
+	cout<<"Welcome message to Client"<<"\n"<<endl;
 	char message[BUF_SIZE];
 	bzero(message,BUF_SIZE);
-	sprintf(message,SERVER_WELCOME,clientfd);
+	sprintf(message,SERVER_WELCOME,-1);
+	//printf("message is:%s",SERVER_WELCOME);
+	
 	int ret = send(clientfd,message,BUF_SIZE,0);
 	if(ret <0 ){
 	  perror("send error");

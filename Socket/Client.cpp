@@ -34,12 +34,21 @@ void Client::Connect()
   }
   
   //链接服务器端
+  /*connect():函数用于创建与指定外部端口的连接。
+   * 参数1：指定一个未连接的流类套接口（SOCK_STREAM）；参数2：指向要连接的套接字的sockaddr的指针；参数3：字节长度
+   * 成功返回0，否则返回-1；
+   * 注意：若参数1指定的socket未被绑定，则系统赋给本地关联一个唯一的值，且设置套接口为已绑定。
+   */
   if(connect(sock,(struct sockaddr *)&serverAddr,sizeof(serverAddr))<0){
     perror("connect error");
     exit(-1);
   }
   
-  //链接管道
+  //创建管道
+  /*创建管道端口，参数：文件描述符的数组(只有两个元素)
+   * pipe_fd[0]:管道读端
+   * pipe_fd[1]:管道写端
+   */
   if(pipe(pipe_fd) < 0){
     perror("pipe error");
     exit(-1);
@@ -78,7 +87,9 @@ void Client::Start()
   //链接服务器
   Connect();
   
-  //创建子进程
+  //创建子进程，并分配资源
+  /*fork()执行后产生两个进程，父进程函数返回子进程的ID，子进程的fork()返回0；
+   */
   pid  = fork();
   //若创建失败则退出
   if(pid < 0){
@@ -92,15 +103,17 @@ void Client::Start()
     
     //输入exit可以退出聊天室
     cout<<"Please input 'exit' to exit the chat room"<<endl;
-    cout<<"\\ + ClientID to private chat"<<endl;
+  //  cout<<"\\ + ClientID to private chat"<<endl;
     //如果客户端运行正常则不断读取输入发送给服务端
     while(isClientwork){
       //清空结构体
       memset(msg.content,0,sizeof(msg.content));
+     //从标准输入（键盘）读入字符
       fgets(msg.content,BUF_SIZE,stdin);
       //客户端输出exit 退出
+      //strncasecmp()函数用于比较参数1和参数2字符串的前n(参数3)个字节，比较时忽略大小写的差异
       if(strncasecmp(msg.content,EXIT,strlen(EXIT)) == 0){
-	isClientwork = 0;
+	isClientwork = false;
       }
       //子进程将信息写入管道
       else{
@@ -108,6 +121,7 @@ void Client::Start()
 	memset(send_buf,0,BUF_SIZE);
 	//结构体转化为字符串
 	memcpy(send_buf,&msg,BUF_SIZE);
+	//向管道写入数据pipe_fd[1]是写端。
 	if(write(pipe_fd[1],send_buf,sizeof(send_buf))<0){
 	  perror("fork error");
 	  exit(-1);
@@ -120,6 +134,7 @@ void Client::Start()
     close(pipe_fd[1]);
     //主循环 epoll_wait
     while(isClientwork){
+      //等待该epfd的读写事件
       int epoll_events_count = epoll_wait(epfd,events,2,-1);
       
       //处理就绪事件
@@ -135,7 +150,7 @@ void Client::Start()
 	  memcpy(&msg,recv_buf,sizeof(msg));
 	  
 	  //ret = 0服务器关闭
-	  if(ret ==0){
+	  if(ret == 0){
 	    cout<<"Server closed connection:"<<sock<<endl;
 	    close(sock);
 	    isClientwork = 0;

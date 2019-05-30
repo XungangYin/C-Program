@@ -69,8 +69,7 @@ static void addfd(int epollfd,int fd,bool enable_et){
   //fcntl函数针对fd描述符进行控制，第二个参数表示操作
   fcntl(fd,F_SETFL,fcntl(fd,F_GETFD,0) | O_NONBLOCK);
   
-  printf("fd added to epoll! \n\n");  
-  
+  printf("fd %d added to epoll! \n",fd);   
 }
 //定义信息结构，在服务端和客户端之间传送
 struct Msg
