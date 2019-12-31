@@ -9,10 +9,10 @@ int main(){
     MYSQL_RES *res;
     MYSQL_ROW row;
 
-    char server[] = "localhost";
-    char user[] = "root";
-    char password[]="123";
-    char database[] = "mysql";
+    const char server[] = "localhost";
+    const char user[] = "root";
+    const char password[]="123";
+    const char database[] = "mysql";
 
     conn = mysql_init(NULL);
 

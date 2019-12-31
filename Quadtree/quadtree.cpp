@@ -38,7 +38,7 @@ void print(node *root){
       node *child = front->child[i];
       child->print();
       if(child->child[0])
-	dq.push_back(child);
+    	dq.push_back(child);
     }
   }
   cout<<endl;

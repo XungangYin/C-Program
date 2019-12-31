@@ -1,7 +1,7 @@
 /*
    演示如何向线程传递参数,pthread_create创建线程成功时，返回0;
  */
-
+#include <unistd.h>
 #include <iostream>
 #include <pthread.h>
 #include <cstdlib>
@@ -19,7 +19,7 @@ void *PrintHello(void *threadarg){
   my_data = (struct thread_data *)threadarg;
   cout<<"thread id:"<<my_data->thread_id;
   cout<<" Mesaage :"<<my_data->message<<endl;
-  
+  sleep(1);
   pthread_exit(NULL);
 }
 

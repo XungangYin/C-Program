@@ -1,0 +1,3 @@
+/home/yxg/temp/Program/OpenCV/parallel/build/CMakeFiles/rebuild_cache.dir
+/home/yxg/temp/Program/OpenCV/parallel/build/CMakeFiles/edit_cache.dir
+/home/yxg/temp/Program/OpenCV/parallel/build/CMakeFiles/main.dir

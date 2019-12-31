@@ -1,15 +1,25 @@
 #include <iostream>
 #include <unistd.h>
 #include <stdio.h>
-
+//#include <tensorflow/core/framework/op.h>
+#include <iostream>
 using namespace std;
 
 int main(int argc,char **argv)
 {
-   bool a = false;
-bool b = false;
- int arr[5] = {1,1,1,1,1};
 
+    bool a = true;
+    bool b = false;
+    int arr[5] = {1,1,1,1,1};
+    
+    char *it;
+    for(int i = 0 ;i < 10;++i){
+        it++ = "a";
+        cout<it<<endl;
+    }
+
+//cout<<c<<endl;
+/*
 if(a == arr[-1])
 {
 	std::cout<<"adfafdas"<<std::endl;
@@ -43,6 +53,7 @@ if(a == arr[-1])
 	}
 	else
 		cout<<"asdfadf"<<endl;
-#endif 
+#endif
+*/ 
   return 0;
 }

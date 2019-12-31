@@ -6,15 +6,18 @@
 #include <unistd.h>
 
 using namespace std;
-#define NUM 5
+#define NUM 2
 
 void *wait(void *t){
   //int i;
   long tid;
   tid = (long)t;
-  sleep(0.1);
   cout<<"Sleeping in thread "<<endl;
   cout<<"Thread with id: "<<tid<<"...exiting"<<endl;
+ // sleep(3);
+  while(1){
+    cout<<"这是一个测试:"<<endl;    
+  }
   pthread_exit(NULL);
 }
 
@@ -39,7 +42,7 @@ int main(){
 
   //程
   for(i=0;i<NUM;i++){
-    rc = pthread_join(threads[i],&status);  //阻塞主线程
+    //rc = pthread_join(threads[i],&status);  //阻塞主线程,等待指定线程的结束
     if(rc){
       cout<<"Error:unable to join"<<rc<<endl;
     }
@@ -50,5 +53,9 @@ int main(){
   }
 
   cout<<"Main:program exiting "<<endl;
-  pthread_exit(NULL);
+  //pthread_exit(NULL); //主线程退出,由它创建的线程并不退出
+ // exit(0);//主进程退出，在该进程创建的所有线程退出
+  sleep(2);
+  pthread_cancel(threads[0]);//取消执行中的线程
+  pthread_cancel(threads[1]);
 }

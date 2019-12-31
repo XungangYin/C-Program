@@ -1,0 +1,24 @@
+进程                      线程
+pid_t			thread_t
+fork			pthread_creater
+waitpid			pthread_join
+exit			pthread_exit
+
+在main函数中		在线程入口函数中
+调用return		调用return
+
+
+僵进程			僵线程
+waitpid			pthread_join
+			pthread_detach(分离线程，线程结束后自动回收占用的资源)
+
+
+kill			pthread_cancel(取消一个执行中的线程，由别的线程调用)
+
+
+线程属性：
+
+获取设置线程竞争范围（进程范围内，系统范围内）
+调度策略
+线程调度的优先级
+线程内全局变量（线程特定数据）
