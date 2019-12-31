@@ -58,7 +58,8 @@ int main(int argc,char **argv){
         char key = (char)waitKey(0);
         
         if(key == 27){
-            return EXIT_SUCCESS;
+           break;
+           // return EXIT_SUCCESS;
         }
         if(key == 'K'||key == 'k'){
             ksize = ksize < 30?ksize+2:-1;
@@ -81,6 +82,18 @@ int main(int argc,char **argv){
 
     }
 
+    //执行拉普拉斯变换
+    cout<<"开始执行拉普拉斯边界识别呢"<<endl;
+    GaussianBlur(image,src,Size(3,3),0,0,BORDER_DEFAULT);
+    cvtColor(src,src_gray,COLOR_BGR2GRAY);
+    Mat abs_dst;
+    Mat dst;
+    int kernel_size =3;
+    Laplacian(src_gray,dst,ddepth,kernel_size,scale,delta,BORDER_DEFAULT);
+    convertScaleAbs(dst,abs_dst);
+
+    imshow("laplactian",abs_dst);
+    waitKey(0);
     return 0;
 }
 
