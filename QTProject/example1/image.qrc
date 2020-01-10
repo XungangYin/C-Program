@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>webwxgetmsgimg.jpeg</file>
+        <file>凹多边形测试.png</file>
+    </qresource>
+</RCC>
