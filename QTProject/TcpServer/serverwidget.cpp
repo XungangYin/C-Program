@@ -50,6 +50,8 @@ void ServerWidget::on_buttonSend_clicked()
     QString message = ui->textEditWrite->toPlainText();
     //给对方发送数据,触发readyRead信号
     tcpSocket->write(message.toUtf8().data());
+
+    ui->textEditWrite->clear();
 }
 
 //关闭服务器链接

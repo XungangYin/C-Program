@@ -17,6 +17,13 @@ public:
     explicit TcpClient(QWidget *parent = 0);
     ~TcpClient();
 
+private slots:
+    void on_connectToServer_clicked();
+
+    void on_buttonSend_clicked();
+
+    void on_buttonClose_clicked();
+
 private:
     Ui::TcpClient *ui;
 
