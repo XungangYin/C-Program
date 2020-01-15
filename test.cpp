@@ -5,9 +5,19 @@
 #include <iostream>
 using namespace std;
 
+void sum(int &a){  //这里是引用，并非取地址
+    
+    cout<<"a is:"<<a<<endl;
+}
+
 int main(int argc,char **argv)
 {
+    int *a = new int (2);
+    int b = 5;
+    sum(*a);
+    sum(b);
 
+/*
     bool a = true;
     bool b = false;
     int arr[5] = {1,1,1,1,1};
@@ -17,7 +27,7 @@ int main(int argc,char **argv)
         it++ = "a";
         cout<it<<endl;
     }
-
+*/
 //cout<<c<<endl;
 /*
 if(a == arr[-1])
